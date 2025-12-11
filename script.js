@@ -2,37 +2,26 @@ function generatePDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // --- Robust font loader: try common variable names produced by converters ---
-  const fontCandidates = [
-    (typeof gujarati_font !== 'undefined' && gujarati_font),
-    (typeof gujaratiFont !== 'undefined' && gujaratiFont),
-    (typeof NotoSansGujarati !== 'undefined' && NotoSansGujarati),
-    (typeof NotoSansGujaratiRegular !== 'undefined' && NotoSansGujaratiRegular),
-    (typeof NotoSansGujarati_Regular !== 'undefined' && NotoSansGujarati_Regular),
-    (typeof NotoSansGujarati_Regular_ttf !== 'undefined' && NotoSansGujarati_Regular_ttf),
-    (typeof font !== 'undefined' && font),
-  ];
-  const fontData = fontCandidates.find(f => !!f) || null;
-
-  if (!fontData) {
-    alert('ફોન્ટ ડેટા મળ્યું નહીં. કૃપા કરીને font.js માંથી ફૉન્ટનું 변수를 તપાસો (ઉદાહરણ: NotoSansGujarati) અને મને જણાવો.');
+  // --- Ensure font variable exists ---
+  if (typeof NotoSansGujarati === 'undefined') {
+    alert('ફૉન્ટ લોડ થયેલું નથી. કૃપા કરીને font.js બ્રાઉઝર પર સાચું રીતે લોડ થયું છે કે નહીં તપાસો અને ફરી પ્રયાસ કરો.');
     return;
   }
 
-  // Register font with a stable internal name
+  // Register font (use stable internal name)
   try {
-    doc.addFileToVFS("NotoSansGujarati.ttf", fontData);
+    doc.addFileToVFS("NotoSansGujarati.ttf", NotoSansGujarati);
     doc.addFont("NotoSansGujarati.ttf", "NotoSansGujarati", "normal");
     doc.setFont("NotoSansGujarati");
   } catch (e) {
     console.error('Font registration failed:', e);
-    alert('ફોન્ટ લોડ કરવામાં ગડબડ થઈ — કન્સોલ તપાસો.');
+    alert('ફોન્ટ રજિસ્ટર કરવામાં સમસ્યા આવી છે - કન્સોલ તપાસો.');
     return;
   }
 
   doc.setFontSize(12);
 
-  // --- Read form values ---
+  // --- Read form values (safe defaults) ---
   const bank_name = document.getElementById("bank_name").value || "";
   const farmer_name = document.getElementById("farmer_name").value || "";
   const aadhaar = document.getElementById("aadhaar").value || "";
@@ -44,7 +33,7 @@ function generatePDF() {
   const village = document.getElementById("village").value || "";
   const mobile = document.getElementById("mobile").value || "";
 
-  // --- Your Gujarati letter template with placeholders replaced ---
+  // --- Gujarati letter template ---
   const text = `
 જા.નં/તા.અ.અ./પી.એમ.કે/ ……….. / 2025
 તા: ...................................
@@ -55,12 +44,12 @@ ${bank_name}
 
 વિષય: પી.એમ.કિસાન યોજના અંતર્ગત મૃત્યુ પામેલ લાભાર્થી ખેડૂતની સહાય પરત કરવા બાબત
 
-અનુ.: ગુજરનાર લાભાર્થી સ્વ ${farmer_name} નાં વારસદારની મૌખિક રજૂઆત
+અનુ.: ગુજરનાર લાભાર્થી સ્વ ${farmer_name} નાં وارસદારની મૌખિક રજૂઆત
 
 જય ભારત,
 ઉપર્યુક્ત વિષય અન્વયે જણાવવાનું કે ભારત સરકારશ્રી દ્વારા પ્રધાનમંત્રી કિસાન સમ્માન નિધિ યોજના ફેબ્રુઆરી ૨૦૧૯ થી અમલમાં છે. જેમાં ખેડૂત કુટુંબને પ્રતિ વર્ષ રૂ. ૬૦૦૦/- ડી.બી.ટી માધ્યમથી દર ચાર માસે સમાન હપ્તામાં ચૂકવવામાં આવે છે.
 
-આ યોજના હેઠળ લાભાર્થી ખેડૂત કુટુંબનું મૃત્યુ થયેલ હોય તે સ્થિતિમાં મૃત્યુ બાદ મળેલ હપ્તાની રકમ પરત જમા કરાવવાની થાય છે. રાજ્ય સરકારશ્રી દ્વારા નીચેના ખાતા ખોલવામાં આવેલ છે:
+આ યોજના હેઠળ લાભાર્થી ખેડૂત કુટુંબનું મૃત્યુ થયેલ હોય તે સ્થિતિમાં मृत्यु બાદ મળેલ હપ્તાની રકમ પરત જમા કરાવવાની થાય છે. રાજ્ય સરકારશ્રી દ્વારા નીચેના ખાતા ખોલવામાં આવેલ છે:
 
 નામ: PM KISAN FUND RECOVERY ACCOUNT
 બેંક નામ: સ્ટેટ બેંક ઓફ ઈન્ડિયા
@@ -69,7 +58,7 @@ ${bank_name}
 
 સ્વ. ${farmer_name} (આધાર: ${aadhaar}, ખાતા નં: ${account_no}) નું તા: ${death_date} ના રોજ નિધન થયેલ છે. તેમના વારસદાર દ્વારા DEATH CERTIFICATE રજૂ કરેલ છે. યોજનામાં સ્ટોપ પેમેન્ટ કરવામાં આવેલ છે.
 
-મૃત્યુ બાદ મળેલ કુલ ${installments} હપ્તાની રકમ રૂ. ${amount}/- સરકારશ્રીને પરત કરવાની થાય છે. ઉપર જણાવેલ ખાતામાં RTGSથી જમા કરાવવા વિનંતી છે.
+મૃત્યુ બાદ મળેલ કુલ ${installments} હप્તાની રકમ રૂ. ${amount}/- સરકારશ્રીને પરત કરવાની થાય છે. ઉપર જણાવેલ ખાતામાં RTGSથી જમા करાવવા વિનંતી છે.
 
 ખેડૂતનું નામ: ${varasdar}
 ગામ: ${village}
@@ -78,10 +67,12 @@ ${bank_name}
 ગ્રામસેવક
 `;
 
-  // --- Draw text with wrapping ---
+  // --- Draw text with wrapping and page margins ---
   const leftMargin = 14;
   const topStart = 18;
   const pageWidth = doc.internal.pageSize.getWidth() - leftMargin * 2;
+
+  // splitTextToSize handles wrapping for long Gujarati paragraphs
   const lines = doc.splitTextToSize(text, pageWidth);
   doc.text(lines, leftMargin, topStart);
 
