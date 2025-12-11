@@ -2,10 +2,12 @@
 <html lang="gu">
 <head>
     <meta charset="UTF-8">
-    <title>PM-Kisan Recovery Letter Generator</title>
+    <title>પી.એમ. કિસાન રિકવરી લેટર જનરેટર</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="font.js"></script>
     <script src="script.js" defer></script>
+
     <style>
         body {
             font-family: 'NotoSansGujarati';
@@ -40,43 +42,43 @@
 </head>
 
 <body>
+    <!-- redeploy: updated title -->
 
-<div class="container">
-    <h2>PM-KISAN Gujarati Letter Generator</h2>
+    <div class="container">
+        <h2>પી.એમ. કિસાન રિકવરી લેટર જનરેટર</h2>
 
-    <label>બેન્કનું નામ</label>
-    <input id="bank_name">
+        <label>બેન્કનું નામ</label>
+        <input id="bank_name">
 
-    <label>સ્વ. ખેડૂતનું નામ</label>
-    <input id="farmer_name">
+        <label>સ્વ. ખેડૂતનું નામ</label>
+        <input id="farmer_name">
 
-    <label>આધાર નંબર</label>
-    <input id="aadhaar">
+        <label>આધાર નંબર</label>
+        <input id="aadhaar">
 
-    <label>બેંક ખાતા નંબર</label>
-    <input id="account_no">
+        <label>બેંક ખાતા નંબર</label>
+        <input id="account_no">
 
-    <label>મૃત્યુ તારીખ</label>
-    <input id="death_date">
+        <label>મૃત્યુ તારીખ</label>
+        <input id="death_date">
 
-    <label>મળેલા હપ્તા</label>
-    <input id="installments">
+        <label>મળેલા હપ્તા</label>
+        <input id="installments">
 
-    <label>કુલ રકમ</label>
-    <input id="amount">
+        <label>કુલ રકમ</label>
+        <input id="amount">
 
-    <label>વારસદારનું નામ</label>
-    <input id="varasdar_nu_naam">
+        <label>વારસદારનું નામ</label>
+        <input id="varasdar_nu_naam">
 
-    <label>ગામ</label>
-    <input id="village">
+        <label>ગામ</label>
+        <input id="village">
 
-    <label>મોબાઇલ નંબર</label>
-    <input id="mobile">
+        <label>મોબાઇલ નંબર</label>
+        <input id="mobile">
 
-    <button onclick="generatePDF()">PDF તૈયાર કરો</button>
-</div>
+        <button onclick="generatePDF()">PDF તૈયાર કરો</button>
+    </div>
 
 </body>
 </html>
-
