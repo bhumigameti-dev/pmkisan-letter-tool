@@ -1,25 +1,51 @@
 function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+  // --- Robust font loader: try common variable names produced by converters ---
+  const fontCandidates = [
+    (typeof gujarati_font !== 'undefined' && gujarati_font),
+    (typeof gujaratiFont !== 'undefined' && gujaratiFont),
+    (typeof NotoSansGujarati !== 'undefined' && NotoSansGujarati),
+    (typeof NotoSansGujaratiRegular !== 'undefined' && NotoSansGujaratiRegular),
+    (typeof NotoSansGujarati_Regular !== 'undefined' && NotoSansGujarati_Regular),
+    (typeof NotoSansGujarati_Regular_ttf !== 'undefined' && NotoSansGujarati_Regular_ttf),
+    (typeof font !== 'undefined' && font),
+  ];
+  const fontData = fontCandidates.find(f => !!f) || null;
 
-    doc.addFileToVFS("NotoSansGujarati.ttf", gujarati_font);
+  if (!fontData) {
+    alert('ફોન્ટ ડેટા મળ્યું નહીં. કૃપા કરીને font.js માંથી ફૉન્ટનું 변수를 તપાસો (ઉદાહરણ: NotoSansGujarati) અને મને જણાવો.');
+    return;
+  }
+
+  // Register font with a stable internal name
+  try {
+    doc.addFileToVFS("NotoSansGujarati.ttf", fontData);
     doc.addFont("NotoSansGujarati.ttf", "NotoSansGujarati", "normal");
     doc.setFont("NotoSansGujarati");
-    doc.setFontSize(12);
+  } catch (e) {
+    console.error('Font registration failed:', e);
+    alert('ફોન્ટ લોડ કરવામાં ગડબડ થઈ — કન્સોલ તપાસો.');
+    return;
+  }
 
-    const bank_name = document.getElementById("bank_name").value;
-    const farmer_name = document.getElementById("farmer_name").value;
-    const aadhaar = document.getElementById("aadhaar").value;
-    const account_no = document.getElementById("account_no").value;
-    const death_date = document.getElementById("death_date").value;
-    const installments = document.getElementById("installments").value;
-    const amount = document.getElementById("amount").value;
-    const varasdar = document.getElementById("varasdar_nu_naam").value;
-    const village = document.getElementById("village").value;
-    const mobile = document.getElementById("mobile").value;
+  doc.setFontSize(12);
 
-    let text = `
+  // --- Read form values ---
+  const bank_name = document.getElementById("bank_name").value || "";
+  const farmer_name = document.getElementById("farmer_name").value || "";
+  const aadhaar = document.getElementById("aadhaar").value || "";
+  const account_no = document.getElementById("account_no").value || "";
+  const death_date = document.getElementById("death_date").value || "";
+  const installments = document.getElementById("installments").value || "";
+  const amount = document.getElementById("amount").value || "";
+  const varasdar = document.getElementById("varasdar_nu_naam").value || "";
+  const village = document.getElementById("village").value || "";
+  const mobile = document.getElementById("mobile").value || "";
+
+  // --- Your Gujarati letter template with placeholders replaced ---
+  const text = `
 જા.નં/તા.અ.અ./પી.એમ.કે/ ……….. / 2025
 તા: ...................................
 
@@ -52,6 +78,13 @@ ${bank_name}
 ગ્રામસેવક
 `;
 
-    doc.text(text, 10, 10);
-    doc.save("pmkisan_letter.pdf");
+  // --- Draw text with wrapping ---
+  const leftMargin = 14;
+  const topStart = 18;
+  const pageWidth = doc.internal.pageSize.getWidth() - leftMargin * 2;
+  const lines = doc.splitTextToSize(text, pageWidth);
+  doc.text(lines, leftMargin, topStart);
+
+  // --- Save the PDF ---
+  doc.save("pmkisan_letter.pdf");
 }
